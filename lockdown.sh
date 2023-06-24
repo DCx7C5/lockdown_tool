@@ -89,7 +89,7 @@ help () {
 }
 
 create_project_arrays () {
-  local line ks info mpnetlst mpfslst mpnetfslst mpmisclst rval
+  local line ks info mpnetlst mpfslst mpnetfslst mpmisclst rval dval
   declare -Ag lkm_arr sysctl_arr
   declare -ag sysctlnamearr
 
@@ -112,8 +112,9 @@ create_project_arrays () {
     info=$(echo "$line"| cut -d',' -f1)
     ks=$(echo "$line"| cut -d',' -f2)
     rval=$(echo "$line"| cut -d',' -f3)
-    sysctl_arr[$ks]="$info|$rval"
-    sysctlnamearr+=("$ks")
+    dval=$(grep "$ks" "$DEFAULT_SETTINGS_FILE"| cut -d'=' -f2)
+    sysctl_arr[$ks]="$info|$rval|$dval"
+    sysc_name_arr+=("$ks")
   done < "templates/recommended_sysctl.conf"
 }
 
