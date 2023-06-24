@@ -224,7 +224,6 @@ main_menu () {
   local ans mnl menu
   local -i theight
   theight=$(($(tput lines)-1))
-  mnl=""
   for x in $(seq 1 "$((theight-5))"); do mnl+="\n"; done
   menu="
 1) Sysctl Hardening Menu
@@ -247,8 +246,6 @@ extras_menu () {
   local ans mnl menu kloak_state
   local -i theight
   theight=$(($(tput lines)-1))
-  mnl=""
-  kloak_state=""
   clear
   for x in $(seq 1 "$((theight-3))"); do mnl+="\n"; done
   if kloak_is_installed;then kloak_state+="${BGREEN}installed${ENDC} | ";else kloak_state+="${BRED}not installed${ENDC} | ";fi
@@ -269,7 +266,6 @@ ksettings_menu () {
   elemc="${#sysctl_arr[@]}"
   theight=$(tput lines)
   count=1
-  mnl=""
   clear
   for x in $(seq 1 "$((theight-elemc))"); do mnl+="\n"; done
   echo -ne "$mnl"
