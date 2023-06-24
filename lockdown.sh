@@ -125,6 +125,7 @@ init_routine () {
     fi
   done
   create_project_arrays
+  logtofile "...checked configs & arrays initialized"
 }
 
 lkm_is_blacklisted () {
@@ -146,10 +147,12 @@ set_sysctl_hardening_state () {
     dval="$(echo "$ks_line"| cut -d'=' -f2)"
     sed -i "s/$ks/#\ $ks/" "$CFG_SYSCTL" >/dev/null &
     sysctl -w "$ks=$dval" >/dev/null &
+    logtofile "SYSCTL | set to default settings $ks=$dval"
   else
     rval=$(echo "${sysctl_arr[$ks]}" | cut -d'|' -f2)
     sed -i "s/#\ $ks/$ks/" "$CFG_SYSCTL" >/dev/null &
     sysctl -w "$ks=$rval" >/dev/null &
+    logtofile "SYSCTL | set to hardened settings $ks=$rval"
   fi
 }
 
@@ -176,6 +179,7 @@ build_kloak () {
   make all
   cp ./eventcap /usr/sbin/
   cp ./kloak /usr/sbin/
+  logtofile "KLOAK | ... build successful"
 }
 
 install_kloak_service () {
@@ -187,6 +191,7 @@ install_kloak_service () {
     PATH="https://raw.githubusercontent.com/DCx7C5/debian_hardening/development/apparmor.d/usr.sbin.kloak"
     wget -O /etc/apparmor.d/usr.sbin.kloak "$PATH" >/dev/null 2>&1
   fi
+  logtofile "KLOAK | ... installed as service"
 }
 
 kloak_is_installed () {
