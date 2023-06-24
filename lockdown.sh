@@ -116,6 +116,7 @@ create_project_arrays () {
     sysctl_arr[$ks]="$info|$rval|$dval"
     sysc_name_arr+=("$ks")
   done < "templates/recommended_sysctl.conf"
+  logtofile "INIT | ... arrays initialized"
 }
 
 init_routine () {
@@ -126,7 +127,6 @@ init_routine () {
     fi
   done
   create_project_arrays
-  logtofile "...checked configs & arrays initialized"
 }
 
 lkm_is_blacklisted () {
@@ -148,12 +148,12 @@ set_sysctl_hardening_state () {
     dval="$(echo "$ks_line"| cut -d'=' -f2)"
     sed -i "s/$ks/#\ $ks/" "$CFG_SYSCTL" >/dev/null &
     sysctl -w "$ks=$dval" >/dev/null &
-    logtofile "SYSCTL | set to default settings $ks=$dval"
+    logtofile "SYSCTL | set to default @ $ks=$dval"
   else
     rval=$(echo "${sysctl_arr[$ks]}" | cut -d'|' -f2)
     sed -i "s/#\ $ks/$ks/" "$CFG_SYSCTL" >/dev/null &
     sysctl -w "$ks=$rval" >/dev/null &
-    logtofile "SYSCTL | set to hardened settings $ks=$rval"
+    logtofile "SYSCTL | hardened settings @ $ks=$rval"
   fi
 }
 
