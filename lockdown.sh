@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 set -o errexit
-set -o nounset
 set -o pipefail
 
 if [ "$EUID" -ne 0 ];then
@@ -270,6 +269,15 @@ install_or_start_kloak() {
   fi
 }
 
+# shellcheck disable=SC2120
+screen_prompt() {
+  if [[ -z $1 ]]; then
+    printf "$BGREEN%s$ENDC > " "$APP_NAME"
+  else
+    printf "$BGREEN%s$ENDC($BYELLOW$1$ENDC) > " "$APP_NAME"
+  fi
+}
+
 main_menu() {
   local ans mnl menu
   local -i theight
@@ -282,7 +290,7 @@ main_menu() {
   clear
   header "$theight"
   printf "Main Menu\n%s\n\n\n" "$menu"
-  printf "$BGREEN%s$ENDC> " "$APP_NAME"
+  screen_prompt
   read -r ans
   case $ans in
     1|sysctl) ksettings_menu;;
@@ -302,7 +310,7 @@ extras_menu() {
   if kloak_is_installed; then state="${BGREEN}installed${ENDC} | "; else state="${BRED}not installed${ENDC} | "; fi
   if kloak_is_active; then state+="${BGREEN}running${ENDC}"; else state+="${BRED}not running${ENDC}"; fi
   printf "$%-30s\t\t$state\n\n\n\n\n\n\n%s\n\n" "1) Install/Start Kloak module" "0) back to main menu"
-  printf "${BGREEN}%s${ENDC}(${BYELLOW}extras${ENDC})> " "$APP_NAME"
+  screen_prompt "extras"
   read -r ans
   case $ans in
     1) install_or_start_kloak;extras_menu;;
@@ -313,7 +321,7 @@ extras_menu() {
 
 
 ksettings_menu() {
-  local ans l elem info re line state cstate
+  local ans l elem info re line state cstate menu_str
   local -i elemc count space theight
   elemc="${#sysctl_arr[@]}"
   theight=$(tput lines)
@@ -326,11 +334,12 @@ ksettings_menu() {
     state=$(echo "$elem"| cut -d'|' -f4)
     cstate=$(get_ks_state_colored "$l")
     if ((count < 10)); then space=51; else space=50; fi
-    printf "$count) $BYELLOW%-${space}s$ENDC | %-45s | $cstate\n" "$info" "$l"
+    menu_str+=$(printf "\n$count) $BYELLOW%-${space}s$ENDC | %-45s | $cstate" "$info" "$l")
     count=$(("$count"+1))
   done
-  printf "\n%s\n%s\n" "n) harden setting / load default" "0) back to Main Menu"
-  printf "\n${BGREEN}%s${ENDC}(${BYELLOW}sysctl${ENDC})> " "$APP_NAME"
+  printf "%s\n\n" "$menu_str"
+  printf "%s\n%s\n\n" "n) harden setting / load default" "0) back to Main Menu"
+  screen_prompt "sysctl"
   read -r ans
   for n in $(seq 1 "$elemc"); do re+="|^$n$"; done
   if [[ $ans == "0" ]]; then
