@@ -276,6 +276,7 @@ main_menu() {
   esac
 }
 
+
 extras_menu() {
   local ans mnl menu kloak_state
   local -i theight
