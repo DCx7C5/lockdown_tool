@@ -51,6 +51,24 @@ on_proc_interrupt() {
   shutdown
 }
 
+header() {
+  local txt mnl theight="$1"
+  for x in $(seq 1 "$((theight-17))"); do mnl+="\n"; done
+  txt="
+
+.____                  __       .___
+|    |    ____   ____ |  | __ __| _/______  _  ______
+|    |   /  _ \_/ ___\|  |/ // __ |/  _ \ \/ \/ /    \    lockdown - hardening tool
+|    |__(  <_> )  \___|    </ /_/ (  <_> )     /   |  \   by ${AUTHOR}
+|_______ \____/ \___  >__|_ \____ |\____/ \/\_/|___|  /
+        \/          \/     \/    \/                 \/
+
+
+
+"
+  printf "$mnl%s" "$txt"
+}
+
 cfg_file_check() {
   local cfg_path="$1"
   if [[ ! -f $cfg_path ]]; then
@@ -258,14 +276,14 @@ main_menu() {
   local ans mnl menu
   local -i theight
   theight=$(($(tput lines)-1))
-  for x in $(seq 1 "$((theight-5))"); do mnl+="\n"; done
   menu="
 1) Sysctl Hardening Menu
 2) Kernel Module Blacklisting
 3) additional hardening methods
 0) Exit"
   clear
-  printf "${mnl}Main Menu\n%s\n\n\n" "$menu"
+  header "$theight"
+  printf "Main Menu\n%s\n\n\n" "$menu"
   printf "$BGREEN%s$ENDC> " "$APP_NAME"
   read -r ans
   case $ans in
