@@ -295,6 +295,7 @@ extras_menu() {
   esac
 }
 
+
 ksettings_menu() {
   local ans l elem info re line state cstate
   local -i elemc count space theight
