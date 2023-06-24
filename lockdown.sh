@@ -288,7 +288,7 @@ main_menu() {
 3) additional hardening methods
 0) Exit"
   clear
-  header "$theight"
+  header $theight
   printf "Main Menu\n%s\n\n\n" "$menu"
   screen_prompt
   read -r ans
@@ -300,7 +300,6 @@ main_menu() {
   esac
 }
 
-
 extras_menu() {
   local ans mnl menu state
   local -i theight
@@ -309,7 +308,7 @@ extras_menu() {
   header $theight
   if kloak_is_installed; then state="${BGREEN}installed${ENDC} | "; else state="${BRED}not installed${ENDC} | "; fi
   if kloak_is_active; then state+="${BGREEN}running${ENDC}"; else state+="${BRED}not running${ENDC}"; fi
-  printf "$%-30s\t\t$state\n\n\n\n\n\n\n%s\n\n" "1) Install/Start Kloak module" "0) back to main menu"
+  printf "$%-30s\t\t$state\n\n%s\n\n" "1) Install/Start Kloak module" "0) back to main menu"
   screen_prompt "extras"
   read -r ans
   case $ans in
@@ -319,7 +318,6 @@ extras_menu() {
   esac
 }
 
-
 ksettings_menu() {
   local ans l elem info re line state cstate menu_str
   local -i elemc count space theight
@@ -327,7 +325,7 @@ ksettings_menu() {
   theight=$(tput lines)
   count=1
   clear
-  echo -ne "\n\n"
+  menu_str="\n\n"
   for l in ${sysc_name_arr[*]}; do
     elem="${sysctl_arr[$l]}"
     info=$(echo "$elem"| cut -d'|' -f1)
