@@ -1,2 +1,2 @@
 # Lockdown - hardening tool
-### interactive debian hardening 
+### interactive debian hardening tool
