@@ -1,0 +1,26 @@
+[Unit]
+Description=kloak anti keystroke deanonymization tool
+Documentation=https://github.com/vmonaco/kloak
+Before=graphical.target
+Before=getty.target
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/kloak
+Restart=on-failure
+CapabilityBoundingSet=
+
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+
+MemoryDenyWriteExecute=true
+NoNewPrivileges=true
+RestrictRealtime=true
+RestrictNamespaces=true
+SystemCallArchitectures=native
+
+[Install]
+WantedBy=multi-user.target
