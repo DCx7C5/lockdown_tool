@@ -55,14 +55,12 @@ header() {
   local txt mnl theight="$1"
   for x in $(seq 1 "$((theight-17))"); do mnl+="\n"; done
   txt="
-
 .____                  __       .___
 |    |    ____   ____ |  | __ __| _/______  _  ______
 |    |   /  _ \_/ ___\|  |/ // __ |/  _ \ \/ \/ /    \    lockdown - hardening tool
 |    |__(  <_> )  \___|    </ /_/ (  <_> )     /   |  \   by ${AUTHOR}
 |_______ \____/ \___  >__|_ \____ |\____/ \/\_/|___|  /
         \/          \/     \/    \/                 \/
-
 
 
 "
@@ -296,14 +294,14 @@ main_menu() {
 
 
 extras_menu() {
-  local ans mnl menu kloak_state
+  local ans mnl menu state
   local -i theight
   theight=$(($(tput lines)-1))
   clear
-  for x in $(seq 1 "$((theight-3))"); do mnl+="\n"; done
+  header $theight
   if kloak_is_installed; then state="${BGREEN}installed${ENDC} | "; else state="${BRED}not installed${ENDC} | "; fi
-  if kloak_is_active; then echo -ne "$state${BGREEN}running${ENDC}"; else echo -ne "$state${BRED}not running${ENDC}"; fi
-  printf "${mnl}%-30s\t\t$kloak_state\n\n\n\n\n\n\n%s\n\n" "1) Install/Start Kloak module" "0) back to main menu"
+  if kloak_is_active; then state+="${BGREEN}running${ENDC}"; else state+="${BRED}not running${ENDC}"; fi
+  printf "$%-30s\t\t$state\n\n\n\n\n\n\n%s\n\n" "1) Install/Start Kloak module" "0) back to main menu"
   printf "${BGREEN}%s${ENDC}(${BYELLOW}extras${ENDC})> " "$APP_NAME"
   read -r ans
   case $ans in
