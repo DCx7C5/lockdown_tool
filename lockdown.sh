@@ -91,7 +91,7 @@ help () {
 create_project_arrays () {
   local line ks info mpnetlst mpfslst mpnetfslst mpmisclst rval dval
   declare -Ag lkm_arr sysctl_arr
-  declare -ag sysctlnamearr
+  declare -ag sysc_name_arr
 
   mpnetlst="dccp sctp rds tipc n-hdlc ax25 netrom x25 rose decnet econet af_802154 ipx appletalk psnap p8023 p8022 can atm"
   mpfslst="cramfs freevxfs jffs2 hfs hfsplus squashfs udf"
@@ -273,7 +273,7 @@ ksettings_menu () {
   clear
   for x in $(seq 1 "$((theight-elemc))"); do mnl+="\n"; done
   echo -ne "$mnl"
-  for l in ${sysctlnamearr[*]}; do
+  for l in ${sysc_name_arr[*]}; do
     elem="${sysctl_arr[$l]}"
     info=$(echo "$elem"| cut -d'|' -f1)
     if ks_is_hardened "$l"; then val="${BGREEN}is hardened${ENDC}" ; else val="${BRED}not hardened${ENDC}"; fi
@@ -294,7 +294,7 @@ ksettings_menu () {
     cleanup
     shutdown
   elif [[ $ans =~ $re ]]; then
-    set_sysctl_hardening_state "${sysctlnamearr[ans-1]}"
+    set_sysctl_hardening_state "${sysc_name_arr[ans-1]}"
     ksettings_menu
   else
     ksettings_menu
