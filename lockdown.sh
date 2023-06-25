@@ -223,9 +223,10 @@ get_ks_state_colored() {
 }
 
 build_kloak() {
-  BLDDIR="/tmp/kloak"
-  if [[ -d "$BLDDIR" ]]; then rm -rf "$BLDDIR" 2>/dev/null; fi
-  git clone "https://github.com/vmonaco/kloak" "$BLDDIR" && cd "$BLDDIR" || exit 1
+  local blddir
+  blddir="/tmp/kloak"
+  if [[ -d "$blddir" ]]; then rm -rf "$blddir" 2>/dev/null; fi
+  git clone "https://github.com/vmonaco/kloak" "$blddir" && cd "$blddir" || exit 1
   make all
   cp ./eventcap /usr/sbin/
   cp ./kloak /usr/sbin/
