@@ -294,13 +294,13 @@ main_menu() {
   read -r ans
   case $ans in
     1|sysctl) ksettings_menu;;
-    3|extras) extras_menu;;
+    3|other) other_menu;;
     0|exit) cleanup; shutdown;;
     *) main_menu;;
   esac
 }
 
-extras_menu() {
+other_menu() {
   local ans mnl menu state
   local -i theight
   theight=$(($(tput lines)-1))
@@ -309,12 +309,12 @@ extras_menu() {
   if kloak_is_installed; then state="${BGREEN}installed${ENDC} | "; else state="${BRED}not installed${ENDC} | "; fi
   if kloak_is_active; then state+="${BGREEN}running${ENDC}"; else state+="${BRED}not running${ENDC}"; fi
   printf "$%-30s\t\t$state\n\n%s\n\n" "1) Install/Start Kloak module" "0) back to main menu"
-  screen_prompt "extras"
+  screen_prompt "other"
   read -r ans
   case $ans in
-    1) install_or_start_kloak;extras_menu;;
+    1) install_or_start_kloak;other_menu;;
     0) main_menu;;
-    *) extras_menu;;
+    *) other_menu;;
   esac
 }
 
