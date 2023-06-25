@@ -222,6 +222,14 @@ get_ks_state_colored() {
   fi
 }
 
+build_suricata() {
+  local blddir
+  blddir="/tmp/suricata"
+  if [[ -d "$blddir" ]]; then rm -rf "$blddir" 2>/dev/null; fi
+  git clone "https://github.com/vmonaco/kloak" "$blddir" && cd "$blddir" || exit 1
+
+}
+
 build_kloak() {
   local blddir
   blddir="/tmp/kloak"
