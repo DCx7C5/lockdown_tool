@@ -23,12 +23,9 @@ SETTINGS_DIR=/etc/${APP_NAME}/
 DEFAULT_SETTINGS_FILE=${SETTINGS_DIR}defaults.conf
 
 CFG_SYSCTL=/etc/sysctl.d/${APP_NAME}_hardening.conf
-CFG_MP_NETPROT=${MODPROBE_DIR}30_${APP_NAME}_network_protocols.conf
-CFG_MP_FS=${MODPROBE_DIR}30_${APP_NAME}_filesystems.conf
-CFG_MP_NETFS=${MODPROBE_DIR}30_${APP_NAME}_network_filesystems.conf
-CFG_MP_MISC=${MODPROBE_DIR}30_${APP_NAME}_misc.conf
+CFG_MP_BLACKLIST=${MODPROBE_DIR}${APP_NAME}_blacklist.conf
 
-ALL_CFG_PATHS="$CFG_SYSCTL $CFG_MP_NETPROT $CFG_MP_FS $CFG_MP_NETFS $CFG_MP_MISC $DEFAULT_SETTINGS_FILE"
+ALL_CFG_PATHS="$CFG_SYSCTL $CFG_MP_BLACKLIST $DEFAULT_SETTINGS_FILE"
 
 logtofile() {
   echo "$(date +"%Y-%m-%d %H:%M:%S") | $1" >> /var/log/lockdown.log 2>&1 &
@@ -94,7 +91,7 @@ create_cfg_file() {
     echo "#$cfg=$rval" | tee -a "$cfg_path" >/dev/null
     done <templates/recommended_sysctl.conf
     chmod 644 "$cfg_path"
-  elif [[ $cfg_path == *modprobe* ]]; then
+  elif [[ $cfg_path == *blacklist.conf ]]; then
     file=$(echo "$cfg_path"| cut -d'/' -f4)
     cp "templates/$file" "$cfg_path"
     chmod 644 "$cfg_path"
@@ -116,27 +113,9 @@ create_project_arrays() {
 
   while read -r line; do
     name=$(echo "$line"| sed 's/#install\ //;s/\ \/bin\/false//')
-    lkm_arr[$name]=$CFG_MP_NETPROT
-    lkm_arr[$CFG_MP_NETPROT]+="$name "
-  done <templates/30_lockdown_network_protocols.conf
-
-  while read -r line; do
-    name=$(echo "$line"| sed 's/#install\ //;s/\ \/bin\/false//')
-    lkm_arr[$name]=$CFG_MP_FS
-    lkm_arr[$CFG_MP_FS]+="$name "
-  done <templates/30_lockdown_filesystems.conf
-
-  while read -r line; do
-    name=$(echo "$line"| sed 's/#install\ //;s/\ \/bin\/false//')
-    lkm_arr[$name]=$CFG_MP_NETFS
-    lkm_arr[$CFG_MP_NETFS]+="$name "
-  done <templates/30_lockdown_network_filesystems.conf
-
-  while read -r line; do
-    name=$(echo "$line"| sed 's/#install\ //;s/\ \/bin\/false//')
-    lkm_arr[$name]=$CFG_MP_MISC
-    lkm_arr[$CFG_MP_MISC]+="$name "
-  done <templates/30_lockdown_misc.conf
+    lkm_arr[$name]=$CFG_MP_BLACKLIST
+    lkm_arr[$CFG_MP_BLACKLIST]+="$name "
+  done <templates/lockdown_blacklist.conf
 
   while read -r line; do
     info=$(echo "$line"| cut -d',' -f1)
@@ -174,7 +153,7 @@ lkm_is_blacklisted() {
   local lkm="$1"
   lkm_line=$(grep "$lkm" "${lkm_arr[$lkm]}")
   if [[ -z $lkm_line ]]; then
-    echo "# install $lkm /bin/false" | tee -a "${lkm_arr[$lkm]}" &
+    echo "#install $lkm /bin/false" | tee -a "${lkm_arr[$lkm]}" &
     return 1
   elif [[ "#" == "${lkm_line:0:1}" ]]; then
     return 1
