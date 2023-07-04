@@ -191,7 +191,7 @@ get_ks_state_colored() {
   local ks="$1"
     state=$(echo "${sysctl_arr[$ks]}"| cut -d'|' -f4)
   if [[ $state == 'default,is hardened' ]]; then
-    echo "default,${BGREEN}is hardened${ENDC}"
+    echo "default,${BGREEN} is hardened${ENDC}"
   elif [[ $state == 'not hardened' ]];then
     echo "${BRED}not hardened${ENDC}"
   elif [[ $state == 'is hardened' ]];then
@@ -296,7 +296,7 @@ other_menu() {
   header $theight
   if kloak_is_installed; then state="${BGREEN}installed${ENDC} | "; else state="${BRED}not installed${ENDC} | "; fi
   if kloak_is_active; then state+="${BGREEN}running${ENDC}"; else state+="${BRED}not running${ENDC}"; fi
-  printf "$%-30s\t\t$state\n\n%s\n\n" "1) Install/Start Kloak module" "0) back to main menu"
+  printf "%-30s\t\t$state\n\n%s\n\n" "1) Install/Start Kloak module" "0) back to main menu"
   screen_prompt "other"
   read -r ans
   case $ans in
@@ -313,7 +313,6 @@ ksettings_menu() {
   theight=$(tput lines)
   count=1
   clear
-  menu_str="\n\n"
   for l in ${sysc_name_arr[*]}; do
     elem="${sysctl_arr[$l]}"
     info=$(echo "$elem"| cut -d'|' -f1)
