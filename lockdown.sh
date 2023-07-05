@@ -15,7 +15,7 @@ BGREEN="\e[1;32m"
 BYELLOW="\e[1;33m"
 ENDC="\e[0m"
 
-APP_NAME='lockdown'
+APP_NAME="${0:0:-3}"
 AUTHOR="@dcx7c5"
 MODPROBE_DIR=/etc/modprobe.d/
 SETTINGS_DIR=/etc/${APP_NAME}/
