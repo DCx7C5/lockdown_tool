@@ -124,11 +124,11 @@ create_project_arrays() {
     ks_line=$(grep "$ks" "$CFG_SYSCTL")
     dval=$(grep "#$ks" "$DEFAULT_SETTINGS_FILE"| cut -d'=' -f2)
     if [[ $rval == "$dval" ]]; then
-      state="default,is hardened"
+      state="default,hardened"
     elif [[ rval != "$dval" ]] && [[ '#' == "${ks_line:0:1}" ]];then
       state="not hardened"
     elif [[ rval != "$dval" ]] && [[ ! '#' == "${ks_line:0:1}" ]];then
-      state="is hardened"
+      state="hardened"
     else
       state="not hardened"
     fi
@@ -166,22 +166,22 @@ set_sysctl_hardening_state() {
   state=$(echo "${sysctl_arr[$ks]}"| cut -d'|' -f4)
   rval=$(echo "${sysctl_arr[$ks]}"| cut -d'|' -f2)
   dval=$(echo "${sysctl_arr[$ks]}"| cut -d'=' -f3)
-  if [[ $state == 'default,is hardened' ]]; then
-    sysctl_arr[$ks]="$(echo "${sysctl_arr[$ks]}"| cut -d'|' -f'1 2 3')|file,is hardened"
+  if [[ $state == 'default,hardened' ]]; then
+    sysctl_arr[$ks]="$(echo "${sysctl_arr[$ks]}"| cut -d'|' -f'1 2 3')|file,hardened"
     sed -i "s/#$ks/$ks/" "$CFG_SYSCTL" >/dev/null
     logtofile "SYSCTL | default cfg overwrite @ $ks=$rval"
   elif [[ $state == 'not hardened' ]];then
-    sysctl_arr[$ks]="$(echo "${sysctl_arr[$ks]}"| cut -d'|' -f'1 2 3')|is hardened"
+    sysctl_arr[$ks]="$(echo "${sysctl_arr[$ks]}"| cut -d'|' -f'1 2 3')|hardened"
     sed -i "s/#$ks/$ks/" "$CFG_SYSCTL" >/dev/null
     sysctl -w "$ks=$rval" >/dev/null &
     logtofile "SYSCTL | hardened settings @ $ks=$rval"
-  elif [[ $state == 'is hardened' ]];then
+  elif [[ $state == 'hardened' ]];then
     sysctl_arr[$ks]="$(echo "${sysctl_arr[$ks]}"| cut -d'|' -f'1 2 3')|not hardened"
     sed -i "s/$ks/#$ks/" "$CFG_SYSCTL" >/dev/null
     sysctl -w "$ks=$dval" >/dev/null &
     logtofile "SYSCTL | set to default @ $ks=$dval"
-  elif [[ $state == 'file,is hardened' ]]; then
-      sysctl_arr[$ks]="$(echo "${sysctl_arr[$ks]}"| cut -d'|' -f'1 2 3')|default,is hardened"
+  elif [[ $state == 'file,hardened' ]]; then
+      sysctl_arr[$ks]="$(echo "${sysctl_arr[$ks]}"| cut -d'|' -f'1 2 3')|default,hardened"
       sed -i "s/$ks/#$ks/" "$CFG_SYSCTL" >/dev/null
       logtofile "SYSCTL | default cfg restored @ $ks=$rval"
   fi
@@ -190,14 +190,14 @@ set_sysctl_hardening_state() {
 get_ks_state_colored() {
   local ks="$1"
     state=$(echo "${sysctl_arr[$ks]}"| cut -d'|' -f4)
-  if [[ $state == 'default,is hardened' ]]; then
-    echo "default,${BGREEN} is hardened${ENDC}"
+  if [[ $state == 'default,hardened' ]]; then
+    echo "default,${BGREEN} hardened${ENDC}"
   elif [[ $state == 'not hardened' ]];then
     echo "${BRED}not hardened${ENDC}"
-  elif [[ $state == 'is hardened' ]];then
-    echo "${BGREEN}is hardened${ENDC}"
-  elif [[ $state == 'file,is hardened' ]]; then
-    echo "${BGREEN}is hardened${ENDC}"
+  elif [[ $state == 'hardened' ]];then
+    echo "${BGREEN}hardened${ENDC}"
+  elif [[ $state == 'file,hardened' ]]; then
+    echo "${BGREEN}hardened${ENDC}"
   fi
 }
 
@@ -294,7 +294,7 @@ other_menu() {
   theight=$(($(tput lines)-1))
   clear
   header $theight
-  if kloak_is_installed; then state="${BGREEN}installed${ENDC} | "; else state="${BRED}not installed${ENDC} | "; fi
+  if kloak_is_installed; then state="${BGREEN}installed${ENDC} "; else state="${BRED}not installed${ENDC} "; fi
   if kloak_is_active; then state+="${BGREEN}running${ENDC}"; else state+="${BRED}not running${ENDC}"; fi
   printf "%-30s\t\t$state\n\n%s\n\n" "1) Install/Start Kloak module" "0) back to main menu"
   screen_prompt "other"
@@ -304,6 +304,11 @@ other_menu() {
     0) main_menu;;
     *) other_menu;;
   esac
+}
+
+lkm_menu() {
+  clear
+
 }
 
 ksettings_menu() {
@@ -319,8 +324,8 @@ ksettings_menu() {
     state=$(echo "$elem"| cut -d'|' -f4)
     cstate=$(get_ks_state_colored "$l")
     if ((count < 10)); then space=51; else space=50; fi
-    menu_str+=$(printf "\n$count) $BYELLOW%-${space}s$ENDC | %-45s | $cstate" "$info" "$l")
-    count=$(("$count"+1))
+    menu_str+=$(printf "\n$count) $BYELLOW%-${space}s$ENDC %-45s $cstate" "$info" "$l")
+    count=$((count+1))
   done
   printf "%s\n\n" "$menu_str"
   printf "%s\n%s\n\n" "n) harden setting / load default" "0) back to Main Menu"
